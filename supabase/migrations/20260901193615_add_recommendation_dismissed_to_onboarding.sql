@@ -1,0 +1,1 @@
+ALTER TABLE onboarding_answers ADD COLUMN IF NOT EXISTS recommendation_dismissed boolean DEFAULT false;

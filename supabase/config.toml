@@ -1,0 +1,11 @@
+[functions.notify-message]
+verify_jwt = true
+
+[functions.send-invite]
+verify_jwt = true
+
+[functions.stripe-checkout]
+verify_jwt = true
+
+[functions.stripe-webhook]
+verify_jwt = false
