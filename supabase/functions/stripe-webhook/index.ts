@@ -23,7 +23,7 @@ if (!webhookSecret) {
   console.warn("STRIPE_WEBHOOK_SECRET not set — webhook signature verification will fail");
 }
 
-async function sendNotificationEmail(userId: string, emailType: string, userEmail: string, subject: string, htmlBody: string) {
+async function sendNotificationEmail(userId: string, emailType: string, userEmail: string, subject: string) {
   // Check if we already sent this type recently (dedup within 24h)
   const { data: existing } = await supabase
     .from("notification_emails")
@@ -118,12 +118,6 @@ Deno.serve(async (req) => {
 
           // If payment failed, send email notification
           if (wasPastDue) {
-            const { data: profile } = await supabase
-              .from("profiles")
-              .select("email")
-              .eq("id", userId)
-              .maybeSingle();
-
             // Get email from auth
             const { data: authUser } = await supabase.auth.admin.getUserById(userId);
 
@@ -134,7 +128,6 @@ Deno.serve(async (req) => {
                 "payment_overdue",
                 email,
                 "Pagamento da assinatura FitSync PRO em atraso",
-                `<p>Olá,</p><p>Detectamos um problema com o pagamento da sua assinatura FitSync PRO. Você tem <strong>5 dias</strong> para regularizar o pagamento antes que as funcionalidades profissionais sejam desativadas.</p><p>Acesse as configurações do app para atualizar seu método de pagamento.</p><p>Equipe FitSync</p>`
               );
             }
           }

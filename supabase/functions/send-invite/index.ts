@@ -111,6 +111,7 @@ Deno.serve(async (req: Request) => {
 
     return json({ ok: true });
   } catch (err) {
+    console.error(err);
     return json({ error: "Erro interno. Tente novamente." }, 500);
   }
 });
