@@ -45,7 +45,7 @@ function parseRange(range: string): { start: string; end: string } | null {
 function getRangeValues(range: string, ctx: EvalContext): number[] {
   const parsed = parseRange(range);
   if (!parsed) {
-    const v = parseFloat(ctx.getCell(parsed?.start ?? range));
+    const v = parseFloat(ctx.getCell(range));
     return isNaN(v) ? [] : [v];
   }
   const s = parseRef(parsed.start);
@@ -548,7 +548,7 @@ export function evaluateCell(rawValue: string, grid: CellValue[][], visited: Set
       const cellVal = grid[parsed.row][parsed.col];
       if (!cellVal || !cellVal.startsWith("=")) return cellVal || "";
       // Recursively evaluate
-      return evaluateCell(cellVal, new Set(visited).add(ref), grid);
+      return evaluateCell(cellVal, grid, new Set(visited).add(ref));
     },
     grid,
   };

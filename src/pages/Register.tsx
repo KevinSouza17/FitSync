@@ -47,7 +47,7 @@ export function Register() {
 
   const [proRole, setProRole] = useState("");
   const [proSpecialty, setProSpecialty] = useState("");
-  const [proCredentials, setProCredentials] = useState("");
+  const [proCredentials] = useState("");
   const [proCity, setProCity] = useState("");
   const [regType, setRegType] = useState<"autonomo" | "empresa">("autonomo");
   const [docNumber, setDocNumber] = useState("");
@@ -55,7 +55,7 @@ export function Register() {
 
   const { signUp } = useAuth();
   const { t } = useI18n();
-  const [registrationDone, setRegistrationDone] = useState(false);
+
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -114,8 +114,6 @@ export function Register() {
       } else {
         setError("Erro ao criar conta. Tente novamente.");
       }
-    } else {
-      setRegistrationDone(true);
     }
     setLoading(false);
   }

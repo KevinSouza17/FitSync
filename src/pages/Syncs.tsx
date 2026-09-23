@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import {
   Heart, MessageCircle, Share2, X, Plus, Music, Play, Loader2,
-  Trash2, Send, Eye, ChevronUp, ChevronDown,
+  Trash2, Send, Eye, ChevronUp, ChevronDown, Volume2, VolumeX,
 } from "lucide-react";
 
 type TouchSwipe = {
@@ -59,11 +59,6 @@ function formatCount(n: number): string {
   return String(n);
 }
 
-function extractHashtags(text: string): string[] {
-  const matches = text.match(/#[\w\u00C0-\u024F]+/g);
-  return matches || [];
-}
-
 export function Syncs() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -86,6 +81,7 @@ export function Syncs() {
   const [uploadDuration, setUploadDuration] = useState(0);
   const [uploadError, setUploadError] = useState("");
   const [shareSync, setShareSync] = useState<SyncWithProfile | null>(null);
+  const [muted, setMuted] = useState(true);
   const videoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
   const containerRef = useRef<HTMLDivElement>(null);
   const touchRef = useRef<TouchSwipe>({ startY: 0, currentY: 0, active: false });
@@ -165,13 +161,14 @@ export function Syncs() {
   });
 
   async function toggleLike(syncId: string) {
+    if (!user) return;
     const wasLiked = likedSyncs.has(syncId);
     if (wasLiked) {
-      await supabase.from("sync_likes").delete().eq("sync_id", syncId).eq("user_id", user?.id ?? "");
+      await supabase.from("sync_likes").delete().eq("sync_id", syncId).eq("user_id", user.id);
       setLikedSyncs((prev) => { const n = new Set(prev); n.delete(syncId); return n; });
       setLikeCounts((prev) => ({ ...prev, [syncId]: Math.max((prev[syncId] || 0) - 1, 0) }));
     } else {
-      await supabase.from("sync_likes").insert({ sync_id: syncId, user_id: user?.id ?? "" });
+      await supabase.from("sync_likes").insert({ sync_id: syncId, user_id: user.id });
       setLikedSyncs((prev) => new Set(prev).add(syncId));
       setLikeCounts((prev) => ({ ...prev, [syncId]: (prev[syncId] || 0) + 1 }));
     }
@@ -208,8 +205,11 @@ export function Syncs() {
 
   async function deleteSync(syncId: string) {
     await supabase.from("syncs").delete().eq("id", syncId);
-    setSyncs((prev) => prev.filter((s) => s.id !== syncId));
-    if (currentIndex > 0) setCurrentIndex(currentIndex - 1);
+    setSyncs((prev) => {
+      const next = prev.filter((s) => s.id !== syncId);
+      setCurrentIndex((index) => Math.min(index, Math.max(0, next.length - 1)));
+      return next;
+    });
   }
 
   function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
@@ -401,7 +401,19 @@ export function Syncs() {
   const isOwn = currentSync?.user_id === user?.id;
 
   return (
-    <div className="relative h-[calc(100vh-64px)] overflow-hidden bg-black lg:h-screen lg:py-0">
+    <div className="relative h-[calc(100vh-64px)] overflow-hidden bg-slate-950 lg:h-screen lg:py-0">
+      <header className="pointer-events-none absolute inset-x-0 top-0 z-30 flex items-center justify-between bg-gradient-to-b from-black/65 to-transparent px-4 pb-8 pt-4 sm:px-6">
+        <div className="pointer-events-auto">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/60">Comunidade FitSync</p>
+          <h1 className="mt-1 text-lg font-bold text-white">Syncs <span className="ml-1 text-xs font-medium text-white/60">{currentIndex + 1} / {syncs.length}</span></h1>
+        </div>
+        <div className="pointer-events-auto flex items-center gap-2">
+          <button onClick={() => setMuted((value) => !value)} aria-label={muted ? "Ativar som" : "Silenciar"} className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-black/30 text-white backdrop-blur-md transition-colors hover:bg-white/15">
+            {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+          </button>
+          <button onClick={() => setShowUpload(true)} className="flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-xs font-bold text-slate-900 shadow-lg transition-transform hover:scale-105 active:scale-95"><Plus className="h-4 w-4" /> Publicar</button>
+        </div>
+      </header>
       <div
         ref={containerRef}
         className="relative h-full w-full"
@@ -438,8 +450,9 @@ export function Syncs() {
               src={sync.video_url}
               loop
               playsInline
-              muted={false}
-              className="h-full w-full object-cover"
+              autoPlay={index === currentIndex}
+              muted={muted}
+              className="h-full w-full bg-slate-950 object-contain"
               onClick={() => {
                 const video = videoRefs.current[sync.id];
                 if (!video) return;

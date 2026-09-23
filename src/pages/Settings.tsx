@@ -605,7 +605,7 @@ function TwoFactorModal({
       });
       if (enrollError) throw enrollError;
       if (data?.totp) {
-        setFactorId(data.totp.id);
+        setFactorId(data.id);
         setQrCode(data.totp.qr_code);
         setSecret(data.totp.secret);
         setStep("qr");

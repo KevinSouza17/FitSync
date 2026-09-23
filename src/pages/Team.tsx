@@ -6,7 +6,6 @@ import { Button } from "../components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "../components/ui/avatar";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../context/AuthContext";
-import { useNotifications } from "../context/NotificationsContext";
 import { InviteModal } from "../components/InviteModal";
 import { useI18n } from "../context/I18nContext";
 import { AutoTextarea } from "../components/ui/textarea";

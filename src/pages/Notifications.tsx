@@ -10,7 +10,6 @@ import {
   ArrowRight,
   Loader2,
   CheckCircle2,
-  X,
 } from "lucide-react";
 import { useNotifications } from "../context/NotificationsContext";
 import { Button } from "../components/ui/button";
@@ -152,7 +151,7 @@ export function Notifications() {
                     <div className="mt-3 flex flex-wrap gap-2">
                       {n.type === "invite" && !n.read && n.code && (
                         <button
-                          onClick={() => handleAccept(n.id, n.code)}
+                          onClick={() => n.code && handleAccept(n.id, n.code)}
                           disabled={acceptingId === n.id}
                           className="flex items-center gap-1.5 rounded-lg bg-primary-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-primary-700 disabled:opacity-50"
                         >

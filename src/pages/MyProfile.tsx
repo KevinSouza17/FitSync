@@ -51,7 +51,7 @@ export function MyProfile() {
   const [suggested, setSuggested] = useState<SuggestedProfile[]>([]);
   const [activeTab, setActiveTab] = useState<ProfileTab>("posts");
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
+  const [search] = useState("");
   const [lightbox, setLightbox] = useState<string | null>(null);
   const [streak, setStreak] = useState<StreakData | null>(null);
 

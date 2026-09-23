@@ -10,10 +10,12 @@ export function DashboardLayout() {
 
   return (
     <NotificationsProvider>
-      <div className={`flex h-screen-ios flex-col overflow-hidden bg-surface-base lg:flex-row ${themeClass}`}>
+      <div className={`app-shell flex h-screen-ios flex-col overflow-hidden bg-surface-base lg:flex-row ${themeClass}`}>
         <Sidebar />
-        <main className="flex-1 overflow-y-auto ios-scroll">
-          <Outlet />
+        <main className="relative flex-1 overflow-y-auto ios-scroll">
+          <div className="page-fade-in min-h-full">
+            <Outlet />
+          </div>
         </main>
       </div>
       <InstallPrompt />

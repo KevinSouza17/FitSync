@@ -390,7 +390,7 @@ export function Feed() {
       setMediaType("image");
 
       // If it's a video ≤ 3 min, also post to Syncs
-      if (mediaType === "video" && videoUrl && videoDuration > 0 && videoDuration <= 180 && data) {
+      if (mediaType === "video" && videoUrl && videoDuration > 0 && videoDuration <= 180 && data && user) {
         const syncFileName = `${user.id}/${Date.now()}-sync.${videoUrl.split(".").pop()?.split("?")[0] || "mp4"}`;
         // Re-upload to syncs bucket for proper CDN URL
         try {
@@ -490,11 +490,6 @@ export function Feed() {
       .select("*, profiles:user_id(full_name, avatar_url)")
       .single();
     if (data) {
-      const updated: PostWithProfile = {
-        ...editingPost,
-        ...data,
-        profiles: data.profiles as PostWithProfile["profiles"],
-      };
       const updateFn = (prev: PostWithProfile[]) => prev.map((p) => p.id === editingPost.id ? { ...p, content: trimmed } : p);
       setPosts(updateFn);
       setFollowingPosts(updateFn);
@@ -631,6 +626,7 @@ export function Feed() {
   }
 
   async function reportComment(commentId: string, _postId: string) {
+    void _postId;
     if (!commentReportReason.trim() || !user) return;
     setCommentReportSubmitting(true);
     const { error } = await supabase.from("comment_reports").insert({

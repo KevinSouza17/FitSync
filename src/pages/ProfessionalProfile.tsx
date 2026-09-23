@@ -158,14 +158,16 @@ export function ProfessionalProfile() {
     setModalOpen(true);
   }
 
-  function openEditPlan(plan: ProfessionalPlan) {
+function openEditPlan(plan: ProfessionalPlan) {
     setEditingId(plan.id);
     setForm({
       id: plan.id,
       name: plan.name,
       price: String(plan.price),
-      tagline: plan.tagline,
-      features: (plan.features as PlanFeature[])?.length ? (plan.features as PlanFeature[]) : [{ label: "", included: true }],
+      tagline: plan.tagline ?? "",
+      features: Array.isArray(plan.features) && plan.features.length
+        ? plan.features.map((feature) => typeof feature === "string" ? { label: feature, included: true } : feature as PlanFeature)
+        : [{ label: "", included: true }],
       popular: plan.popular,
     });
     setModalOpen(true);
@@ -200,8 +202,6 @@ export function ProfessionalProfile() {
     await supabase.from("professional_plans").delete().eq("id", id);
     setPlans((prev) => prev.filter((p) => p.id !== id));
   }
-
-  const taCls = "w-full rounded-lg border border-edge-base bg-surface-base px-3 py-2 text-sm text-content-strong placeholder:text-content-muted focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-100";
 
   if (loading) {
     return (
@@ -284,7 +284,7 @@ export function ProfessionalProfile() {
               {plans.map((plan) => (
                 <div key={plan.id} className="relative">
                   <PlanCardDisplay
-                    plan={{ name: plan.name, price: plan.price, tagline: plan.tagline, features: plan.features as PlanFeature[] }}
+                    plan={{ name: plan.name, price: plan.price, tagline: plan.tagline ?? "", features: Array.isArray(plan.features) ? plan.features.map((feature) => typeof feature === "string" ? { label: feature, included: true } : feature as PlanFeature) : [] }}
                     popular={plan.popular}
                   />
                   {!viewingOther && (

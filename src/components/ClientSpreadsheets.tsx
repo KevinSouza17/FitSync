@@ -5,7 +5,6 @@ import {
   Eraser, Sigma, ChevronDown, FunctionSquare,
   Rows3, Columns3, ArrowDownToLine, ArrowUpToLine,
   ArrowRightToLine, ArrowLeftToLine,
-  Trash, Minus,
 } from "lucide-react";
 import { Card, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
@@ -15,7 +14,7 @@ import { supabase } from "../lib/supabase";
 import type { ClientSpreadsheet } from "../lib/types";
 import { cn } from "../lib/utils";
 import {
-  evaluateCell, isFormula, colLetter, makeRef, parseRef,
+  evaluateCell, isFormula, colLetter, makeRef,
   FORMULA_FUNCTIONS,
 } from "../lib/formulaEngine";
 
@@ -130,10 +129,10 @@ export function ClientSpreadsheets({ clientId, clientName }: Props) {
 
   // Compute display grid (with formulas evaluated)
   const displayGrid = useMemo(() => {
-    return grid.map((row, r) =>
-      row.map((cell, c) => {
+    return grid.map((row) =>
+      row.map((cell) => {
         if (isFormula(cell.v)) {
-          return { v: evaluateCell(cell.v, grid) };
+          return { v: evaluateCell(cell.v, grid.map((r) => r.map((c) => c.v))) };
         }
         return cell;
       })
@@ -710,7 +709,7 @@ export function ClientSpreadsheets({ clientId, clientName }: Props) {
             const rows = Array.isArray(s.data) ? (s.data as string[][]) : [];
             // Evaluate formulas for preview
             const evalGrid = rows.map((r) => r.map((v) => ({ v })));
-            const previewGrid = evalGrid.map((r) => r.map((c) => ({ v: evaluateCell(c.v, evalGrid) })));
+            const previewGrid = evalGrid.map((r) => r.map((c) => ({ v: evaluateCell(c.v, evalGrid.map((row) => row.map((cell) => cell.v))) })));
             return (
               <Card key={s.id} className="bg-surface-card">
                 <CardContent className="flex flex-col gap-3 p-4">

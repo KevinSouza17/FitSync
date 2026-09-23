@@ -1,0 +1,47 @@
+{
+  "name": "FitSync",
+  "short_name": "FitSync",
+  "description": "Sua jornada para uma vida mais saudável",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "categories": ["health", "fitness", "lifestyle"],
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "short_name": "Feed",
+      "name": "Ver Feed",
+      "url": "/feed",
+      "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
+    },
+    {
+      "short_name": "Diário",
+      "name": "Registrar refeição",
+      "url": "/diary",
+      "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
+    },
+    {
+      "short_name": "Treino",
+      "name": "Meu treino",
+      "url": "/workout",
+      "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
+    },
+    {
+      "short_name": "Perfil",
+      "name": "Meu perfil",
+      "url": "/my-profile",
+      "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
+    }
+  ]
+}

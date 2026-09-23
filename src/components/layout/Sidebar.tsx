@@ -116,8 +116,8 @@ export function Sidebar() {
   }
 
   const sidebarContent = (
-    <aside className="flex h-full w-64 shrink-0 flex-col border-r border-edge-base bg-surface-card px-4 py-4">
-      <header className="flex items-center gap-2.5 px-2 pb-6 pt-1">
+    <aside className="flex h-full w-72 shrink-0 flex-col border-r border-edge-base/70 bg-surface-card/90 px-4 py-5 backdrop-blur-xl">
+      <header className="flex items-center gap-2.5 px-2 pb-7 pt-1">
         <FitSyncLogo size="sm" />
         <button onClick={() => setMobileOpen(false)} className="ml-auto rounded-lg p-1.5 text-content-muted hover:bg-surface-subtle lg:hidden">
           <X className="h-5 w-5" />
@@ -139,14 +139,14 @@ export function Sidebar() {
                   onClick={() => setMobileOpen(false)}
                   className={({ isActive }) =>
                     cn(
-                      "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-                      isActive ? "bg-primary-50 text-primary-600" : "text-content-body hover:bg-surface-subtle hover:text-content-strong"
+                      "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200",
+                      isActive ? "bg-primary-600 text-white shadow-lg shadow-primary-600/20" : "text-content-body hover:bg-primary-50 hover:text-primary-700"
                     )
                   }
                 >
                   <Icon className="h-5 w-5 shrink-0" />
                   {t(key)}
-                  {showBadge && (
+                      {showBadge && (
                     <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-primary-600 px-1.5 text-[10px] font-bold text-white">
                       {unreadCount > 9 ? "9+" : unreadCount}
                     </span>

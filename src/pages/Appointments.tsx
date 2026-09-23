@@ -291,8 +291,6 @@ export function Appointments() {
 
   const taCls =
     "w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-content-strong placeholder:text-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-100";
-  const inputCls =
-    "flex h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm text-content-strong placeholder:text-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-100";
   const selectCls =
     "flex h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm text-content-strong focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-100";
 

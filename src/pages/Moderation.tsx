@@ -215,7 +215,7 @@ export function Moderation() {
                         <Trash2 className="h-3.5 w-3.5" /> Excluir post
                       </Button>
                       {r.post && (
-                        <Button size="sm" variant="outline" onClick={() => { toggleBan(r.post.user_id, false); resolveReport(r.id, "resolved"); }} className="gap-1.5 border-red-200 text-red-600 hover:bg-red-50">
+                        <Button size="sm" variant="outline" disabled={!r.post} onClick={() => { if (r.post) { toggleBan(r.post.user_id, false); resolveReport(r.id, "resolved"); } }} className="gap-1.5 border-red-200 text-red-600 hover:bg-red-50">
                           <Ban className="h-3.5 w-3.5" /> Banir usuário
                         </Button>
                       )}

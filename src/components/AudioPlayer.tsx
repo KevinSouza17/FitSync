@@ -7,7 +7,7 @@ interface AudioPlayerProps {
   label?: string;
 }
 
-export function AudioPlayer({ url, isMine, label = "Áudio" }: AudioPlayerProps) {
+export function AudioPlayer({ url, isMine }: AudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const rafRef = useRef<number | null>(null);
   const [playing, setPlaying] = useState(false);
@@ -22,7 +22,9 @@ export function AudioPlayer({ url, isMine, label = "Áudio" }: AudioPlayerProps)
       try {
         const res = await fetch(url);
         const buf = await res.arrayBuffer();
-        const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const AudioContextCtor = window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+        if (!AudioContextCtor) throw new Error("AudioContext indisponível");
+        const ctx = new AudioContextCtor();
         const audioBuffer = await ctx.decodeAudioData(buf);
         const channelData = audioBuffer.getChannelData(0);
         const samples = 32;
