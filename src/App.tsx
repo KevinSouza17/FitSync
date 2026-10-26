@@ -31,6 +31,7 @@ import { Moderation } from "./pages/Moderation";
 import { Onboarding } from "./pages/Onboarding";
 import { ResetPassword } from "./pages/ResetPassword";
 import { TermsAcceptance } from "./pages/TermsAcceptance";
+import { Welcome } from "./pages/Welcome";
 import { DashboardLayout } from "./components/layout/DashboardLayout";
 import { PageLoader, SplashScreen } from "./components/PageLoader";
 
@@ -113,7 +114,8 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/" element={<Navigate to="/welcome" replace />} />
+        <Route path="/welcome" element={<Welcome />} />
         <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
         <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
         <Route
