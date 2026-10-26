@@ -1,5 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
+type ThemeMode = "light" | "dark";
+
 interface ThemeContextValue {
   darkMode: boolean;
   reducedMotion: boolean;

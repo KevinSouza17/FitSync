@@ -1,11 +1,12 @@
 import { useEffect, useState, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Heart, Trash2, Loader2, MessageCircle, Share2, Lock, Unlock,
-  UserPlus, UserMinus, MapPin,
+  Users, UserPlus, UserMinus, Calendar, MapPin,
 } from "lucide-react";
 import { Card, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
+import { Avatar, AvatarImage, AvatarFallback } from "../components/ui/avatar";
 import { AvatarPreview } from "../components/ui/AvatarPreview";
 import { StoryViewer } from "../components/StoryViewer";
 import { ShareModal } from "../components/ShareModal";
@@ -40,6 +41,10 @@ interface PostWithProfile {
   comment_count: number;
 }
 
+function initials(name: string) {
+  return name.split(" ").slice(0, 2).map((w) => w[0]?.toUpperCase() ?? "").join("");
+}
+
 function timeAgo(dateStr: string) {
   const diff = Date.now() - new Date(dateStr).getTime();
   const mins = Math.floor(diff / 60000);
@@ -56,6 +61,7 @@ export function UserProfile() {
   const { id: paramId } = useParams();
   const { user, profile } = useAuth();
   const { t } = useI18n();
+  const navigate = useNavigate();
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [posts, setPosts] = useState<PostWithProfile[]>([]);
   const [loading, setLoading] = useState(true);
