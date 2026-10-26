@@ -1,0 +1,167 @@
+{
+  "info": {
+    "name": "FitSync API",
+    "_postman_id": "fitsync-api-collection",
+    "description": "Coleção das APIs (Edge Functions) do FitSync.\n\nVariáveis de ambiente necessárias:\n- base_url: https://ryqzwvmzysohgqxbwtoj.supabase.co/functions/v1\n- auth_token: JWT de sessão do Supabase (obtido após login)\n- anon_key: chave anônima do Supabase (usada como Apikey header)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "https://ryqzwvmzysohgqxbwtoj.supabase.co/functions/v1" },
+    { "key": "auth_token", "value": "" },
+    { "key": "anon_key", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "notify-message",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{auth_token}}", "type": "text" },
+          { "key": "Content-Type", "value": "application/json", "type": "text" },
+          { "key": "apikey", "value": "{{anon_key}}", "type": "text" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"conversationId\": \"11111111-1111-1111-1111-111111111111\",\n  \"content\": \"Olá, tudo bem?\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/notify-message",
+          "host": ["{{base_url}}"],
+          "path": ["notify-message"]
+        },
+        "description": "Notifica o destinatário de uma conversa sobre uma nova mensagem.\n\nBody:\n- conversationId (UUID, obrigatório): ID da conversa\n- content (string, obrigatório): conteúdo da mensagem"
+      },
+      "response": [
+        {
+          "name": "200 OK",
+          "status": "OK",
+          "code": 200,
+          "body": "{\n  \"ok\": true\n}"
+        },
+        {
+          "name": "400 Campos faltando",
+          "status": "Bad Request",
+          "code": 400,
+          "body": "{\n  \"error\": \"conversationId e content são obrigatórios.\"\n}"
+        },
+        {
+          "name": "401 Não autenticado",
+          "status": "Unauthorized",
+          "code": 401,
+          "body": "{\n  \"error\": \"Não autenticado.\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "send-invite",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{auth_token}}", "type": "text" },
+          { "key": "Content-Type", "value": "application/json", "type": "text" },
+          { "key": "apikey", "value": "{{anon_key}}", "type": "text" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"amigo@exemplo.com\",\n  \"expectedUserId\": \"\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/send-invite",
+          "host": ["{{base_url}}"],
+          "path": ["send-invite"]
+        },
+        "description": "Envia um convite (com código de 6 dígitos) para outro usuário via e-mail.\n\nBody:\n- email (string, obrigatório): e-mail do convidado\n- expectedUserId (UUID, opcional): validação extra do ID esperado"
+      },
+      "response": [
+        {
+          "name": "200 OK",
+          "status": "OK",
+          "code": 200,
+          "body": "{\n  \"ok\": true\n}"
+        },
+        {
+          "name": "400 E-mail faltando",
+          "status": "Bad Request",
+          "code": 400,
+          "body": "{\n  \"error\": \"E-mail é obrigatório.\"\n}"
+        },
+        {
+          "name": "404 E-mail sem conta",
+          "status": "Not Found",
+          "code": 404,
+          "body": "{\n  \"error\": \"Este e-mail ainda não tem conta no FitSync. Peça para a pessoa se cadastrar primeiro.\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "stripe-checkout",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{auth_token}}", "type": "text" },
+          { "key": "Content-Type", "value": "application/json", "type": "text" },
+          { "key": "apikey", "value": "{{anon_key}}", "type": "text" },
+          { "key": "Origin", "value": "https://meu-app.com", "type": "text" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        },
+        "url": {
+          "raw": "{{base_url}}/stripe-checkout",
+          "host": ["{{base_url}}"],
+          "path": ["stripe-checkout"]
+        },
+        "description": "Cria uma sessão de checkout do Stripe para a assinatura PRO mensal (R$ 25/mês, 7 dias de teste). Retorna a URL para redirecionar o usuário.\n\nBody: vazio (o usuário é identificado pelo JWT)."
+      },
+      "response": [
+        {
+          "name": "200 OK",
+          "status": "OK",
+          "code": 200,
+          "body": "{\n  \"url\": \"https://checkout.stripe.com/c/pay/cs_test_...\"\n}"
+        },
+        {
+          "name": "401 Não autenticado",
+          "status": "Unauthorized",
+          "code": 401,
+          "body": "{\n  \"error\": \"Unauthorized\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "stripe-webhook",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "stripe-signature", "value": "t=...,v1=...", "type": "text" },
+          { "key": "Content-Type", "value": "application/json", "type": "text" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": \"evt_test_123\",\n  \"type\": \"checkout.session.completed\",\n  \"data\": { \"object\": {} }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/stripe-webhook",
+          "host": ["{{base_url}}"],
+          "path": ["stripe-webhook"]
+        },
+        "description": "Recebe eventos do Stripe e atualiza assinaturas no banco. NÃO usa JWT — a autenticação é feita pelo Stripe via header 'stripe-signature'.\n\nEventos tratados: checkout.session.completed, customer.subscription.updated, customer.subscription.deleted, invoice.payment_failed, invoice.payment_succeeded.\n\nPara testar localmente, use a CLI do Stripe (stripe listen --forward-to ...)."
+      },
+      "response": [
+        {
+          "name": "200 OK",
+          "status": "OK",
+          "code": 200,
+          "body": "{\n  \"received\": true\n}"
+        },
+        {
+          "name": "400 Assinatura inválida",
+          "status": "Bad Request",
+          "code": 400,
+          "body": "Missing signature"
+        }
+      ]
+    }
+  ]
+}
