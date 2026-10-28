@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuites tests="18" failures="0" errors="0" skipped="7">
+  <testsuite name="Testes unitários — auxiliares e CORS" tests="10" failures="0" errors="0" skipped="0" time="0.0">
+    <testcase classname="Testes unitários — auxiliares e CORS" name="função auxiliar de resposta JSON monta uma Response JSON com status 200 por padrão" time="0.004" />
+    <testcase classname="Testes unitários — auxiliares e CORS" name="função auxiliar de resposta JSON respeita um status customizado (ex.: 400)" time="0.0" />
+    <testcase classname="Testes unitários — auxiliares e CORS" name="função auxiliar de resposta JSON sempre inclui os headers CORS" time="0.0" />
+    <testcase classname="Testes unitários — auxiliares e CORS" name="função auxiliar de leitura do token JWT extrai o payload (sub) de um JWT válido em formato" time="0.0" />
+    <testcase classname="Testes unitários — auxiliares e CORS" name="função auxiliar de leitura do token JWT retorna null para um token mal formado" time="0.0" />
+    <testcase classname="Testes unitários — auxiliares e CORS" name="função auxiliar de leitura do token JWT retorna null para entrada vazia" time="0.0" />
+    <testcase classname="Testes unitários — auxiliares e CORS" name="função auxiliar de geração de código gera um código de exatamente 6 dígitos" time="0.001" />
+    <testcase classname="Testes unitários — auxiliares e CORS" name="função auxiliar de geração de código gera códigos distintos em chamadas sucessivas (probabilidade)" time="0.001" />
+    <testcase classname="Testes unitários — auxiliares e CORS" name="Cabeçalhos CORS permite todos os métodos usados pela API" time="0.0" />
+    <testcase classname="Testes unitários — auxiliares e CORS" name="Cabeçalhos CORS permite os headers necessários para o Supabase" time="0.0" />
+  </testsuite>
+  <testsuite name="Testes HTTP de rotas — APIs FitSync" tests="8" failures="0" errors="0" skipped="7" time="0.0">
+    <testcase classname="Testes HTTP de rotas — APIs FitSync" name="notify-message retorna 401 sem header de Authorization" time="0.0">
+      <skipped />
+    </testcase>
+    <testcase classname="Testes HTTP de rotas — APIs FitSync" name="notify-message com autenticação retorna 400 quando conversationId/content faltam" time="0.0">
+      <skipped />
+    </testcase>
+    <testcase classname="Testes HTTP de rotas — APIs FitSync" name="notify-message com autenticação retorna 404 para conversationId inexistente" time="0.0">
+      <skipped />
+    </testcase>
+    <testcase classname="Testes HTTP de rotas — APIs FitSync" name="send-invite retorna 401 sem header de Authorization" time="0.0">
+      <skipped />
+    </testcase>
+    <testcase classname="Testes HTTP de rotas — APIs FitSync" name="send-invite com autenticação retorna 400 quando o e-mail está ausente" time="0.0">
+      <skipped />
+    </testcase>
+    <testcase classname="Testes HTTP de rotas — APIs FitSync" name="stripe-checkout retorna 401 sem header de Authorization" time="0.0">
+      <skipped />
+    </testcase>
+    <testcase classname="Testes HTTP de rotas — APIs FitSync" name="stripe-webhook retorna 400 sem header stripe-signature" time="0.0">
+      <skipped />
+    </testcase>
+    <testcase classname="Testes HTTP de rotas — APIs FitSync" name="Pré-verificação CORS (OPTIONS) os cabeçalhos CORS permitem os métodos esperados" time="0.001" />
+  </testsuite>
+</testsuites>
