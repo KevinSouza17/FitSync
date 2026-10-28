@@ -1,3 +1,9 @@
+// =============================================================================
+// Tipos do banco de dados (Supabase)
+// -----------------------------------------------------------------------------
+// Definições TypeScript das tabelas, linhas e tipos derivados do schema.
+// =============================================================================
+
 export interface Database {
   public: {
     Tables: {
@@ -500,6 +506,7 @@ export interface Database {
   };
 }
 
+// ── Tipos derivados (atalhos para as linhas de cada tabela) ──
 export type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 export type Meal = Database["public"]["Tables"]["meals"]["Row"];
 export type DiaryTask = Database["public"]["Tables"]["diary_tasks"]["Row"];

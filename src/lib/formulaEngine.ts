@@ -1,13 +1,20 @@
-// Formula engine for spreadsheet cells
-// Supports: =SUM(A1:A10) =AVERAGE =MAX =MIN =COUNT =IF =ROUND =ABS =SQRT =POWER =CONCAT =LEN =UPPER =LOWER =TRIM =MEDIAN =PRODUCT =MOD =CEILING =FLOOR =A1+B1 arithmetic, cell refs, ranges
+// =============================================================================
+// Motor de fórmulas para células da planilha
+// -----------------------------------------------------------------------------
+// Suporta: =SUM(A1:A10) =AVERAGE =MAX =MIN =COUNT =IF =ROUND =ABS =SQRT =POWER
+//          =CONCAT =LEN =UPPER =LOWER =TRIM =MEDIAN =PRODUCT =MOD =CEILING
+//          =FLOOR  e  aritmética A1+B1, referências de célula e intervalos.
+// =============================================================================
 
 export type CellValue = string;
 
+// Contexto de avaliação: fornece acesso à grade de células durante o cálculo.
 interface EvalContext {
   getCell: (ref: string) => string;
   grid: CellValue[][];
 }
 
+// Converte índice de coluna (0-based) em letra(s) de coluna (A, B, ..., Z, AA, ...).
 const COL_LETTERS = (n: number): string => {
   let s = "";
   n++;
@@ -19,8 +26,10 @@ const COL_LETTERS = (n: number): string => {
   return s;
 };
 
+// Reexporta a função de conversão para uso externo.
 export const colLetter = COL_LETTERS;
 
+// Converte uma referência como "A1" em índices { linha, coluna } (0-based).
 export function parseRef(ref: string): { row: number; col: number } | null {
   const m = ref.match(/^([A-Za-z]+)(\d+)$/);
   if (!m) return null;
@@ -32,16 +41,19 @@ export function parseRef(ref: string): { row: number; col: number } | null {
   return { row: parseInt(m[2], 10) - 1, col: col - 1 };
 }
 
+// Monta uma referência de célula a partir de índices numéricos (0-based).
 export function makeRef(row: number, col: number): string {
   return `${COL_LETTERS(col)}${row + 1}`;
 }
 
+// Faz o parse de um intervalo "A1:B2" em { inicio, fim }.
 function parseRange(range: string): { start: string; end: string } | null {
   const parts = range.split(":");
   if (parts.length === 2) return { start: parts[0].trim(), end: parts[1].trim() };
   return null;
 }
 
+// Extrai todos os valores numéricos de um intervalo.
 function getRangeValues(range: string, ctx: EvalContext): number[] {
   const parsed = parseRange(range);
   if (!parsed) {
@@ -66,6 +78,7 @@ function getRangeValues(range: string, ctx: EvalContext): number[] {
   return vals;
 }
 
+// Extrai todos os valores (como texto) de um intervalo.
 function getRangeCells(range: string, ctx: EvalContext): string[] {
   const parsed = parseRange(range);
   if (!parsed) return [ctx.getCell(range)];
@@ -85,7 +98,7 @@ function getRangeCells(range: string, ctx: EvalContext): string[] {
   return vals;
 }
 
-// Tokenizer for formula expressions
+// Tokenizador para expressões de fórmula.
 type Token =
   | { type: "num"; value: number }
   | { type: "ref"; value: string }
@@ -96,6 +109,7 @@ type Token =
   | { type: "comma" }
   | { type: "string"; value: string };
 
+// Divide a expressão em tokens (números, refs, operadores, funções, etc.).
 function tokenize(expr: string): Token[] {
   const tokens: Token[] = [];
   let i = 0;
@@ -155,7 +169,7 @@ function tokenize(expr: string): Token[] {
   return tokens;
 }
 
-// Parser with operator precedence and function calls
+// Parser com precedência de operadores e chamadas de função.
 type ExprNode =
   | { type: "num"; value: number }
   | { type: "string"; value: string }
@@ -291,6 +305,7 @@ class Parser {
   }
 }
 
+// Avalia um nó da AST produzindo um número ou string.
 function evalNode(node: ExprNode, ctx: EvalContext): number | string {
   switch (node.type) {
     case "num": return node.value;
@@ -333,12 +348,14 @@ function evalNode(node: ExprNode, ctx: EvalContext): number | string {
   return 0;
 }
 
+// Converte um valor para número (0 se inválido).
 function toNum(v: number | string): number {
   if (typeof v === "number") return v;
   const n = parseFloat(v);
   return isNaN(n) ? 0 : n;
 }
 
+// Extrai os argumentos numéricos de uma chamada de função.
 function getArgNumbers(args: ExprNode[], ctx: EvalContext): number[] {
   const vals: number[] = [];
   for (const arg of args) {
@@ -353,6 +370,7 @@ function getArgNumbers(args: ExprNode[], ctx: EvalContext): number[] {
   return vals;
 }
 
+// Extrai os argumentos como texto de uma chamada de função.
 function getArgStrings(args: ExprNode[], ctx: EvalContext): string[] {
   const vals: string[] = [];
   for (const arg of args) {
@@ -367,6 +385,7 @@ function getArgStrings(args: ExprNode[], ctx: EvalContext): string[] {
   return vals;
 }
 
+// Avalia uma função de planilha pelo nome (SUM, AVERAGE, IF, etc.).
 function evalFunc(name: string, args: ExprNode[], ctx: EvalContext): number | string {
   const nums = () => getArgNumbers(args, ctx);
   const strs = () => getArgStrings(args, ctx);
@@ -518,7 +537,7 @@ function evalFunc(name: string, args: ExprNode[], ctx: EvalContext): number | st
   }
 }
 
-// Detect circular references
+// Detecta referências circulares listando todas as refs de célula na expressão.
 function findRefs(expr: string): string[] {
   const refs: string[] = [];
   const tokens = tokenize(expr);
@@ -528,6 +547,7 @@ function findRefs(expr: string): string[] {
   return refs;
 }
 
+// Avalia uma célula: se for fórmula (=...), calcula o resultado; caso contrário retorna o valor cru.
 export function evaluateCell(rawValue: string, grid: CellValue[][], visited: Set<string> = new Set()): string {
   if (!rawValue || !rawValue.startsWith("=")) return rawValue;
 
@@ -571,12 +591,12 @@ export function evaluateCell(rawValue: string, grid: CellValue[][], visited: Set
   }
 }
 
-// Check if a cell contains a formula
+// Verifica se o conteúdo de uma célula é uma fórmula.
 export function isFormula(value: string): boolean {
   return value.startsWith("=");
 }
 
-// Get all formula functions for the formula bar help
+// Lista de todas as funções suportadas, para exibir na ajuda da barra de fórmulas.
 export const FORMULA_FUNCTIONS: { name: string; desc: string; example: string }[] = [
   { name: "SUM", desc: "Soma de um intervalo", example: "=SUM(A1:A10)" },
   { name: "AVERAGE", desc: "Média de um intervalo", example: "=AVERAGE(A1:A10)" },

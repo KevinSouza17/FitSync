@@ -1,7 +1,17 @@
+// =============================================================================
+// Motor de recomendações — planos de treino e dieta
+// -----------------------------------------------------------------------------
+// Gera planos personalizados com base nas respostas do onboarding do usuário.
+// =============================================================================
+
+// Objetivo do usuário
 export type Goal = "lose_weight" | "build_muscle" | "maintain" | "endurance" | "general";
+// Nível de experiência
 export type Experience = "beginner" | "intermediate" | "advanced";
+// Tipo de dieta
 export type Diet = "omnivore" | "vegetarian" | "vegan" | "low_carb" | "flexible";
 
+// Respostas do onboarding usadas para gerar as recomendações.
 export interface RecommendationAnswers {
   goal: Goal;
   experience: Experience;
@@ -11,6 +21,7 @@ export interface RecommendationAnswers {
   equipment: string[];
 }
 
+// Exercício individual dentro de um plano de treino.
 export interface WorkoutRecommendationExercise {
   name: string;
   sets: number;
@@ -19,12 +30,14 @@ export interface WorkoutRecommendationExercise {
   notes?: string;
 }
 
+// Um dia de treino (grupo de exercícios).
 export interface WorkoutRecommendationDay {
   dayName: string;
   focus: string;
   exercises: WorkoutRecommendationExercise[];
 }
 
+// Uma refeição dentro do plano alimentar.
 export interface DietRecommendationMeal {
   meal: string;
   items: string;
@@ -34,9 +47,11 @@ export interface DietRecommendationMeal {
   fats: number;
 }
 
+// Grupos musculares e chaves de equipamento usados internamente.
 type MuscleGroup = "push" | "pull" | "legs";
 type EquipKey = "gym" | "dumbbells" | "bodyweight";
 
+// Definição de um exercício na biblioteca.
 interface ExerciseDef {
   name: string;
   primary: string;
@@ -44,6 +59,7 @@ interface ExerciseDef {
   difficulty: 1 | 2 | 3;
 }
 
+// Biblioteca de exercícios por tipo de equipamento e grupo muscular.
 const EXERCISE_LIBRARY: Record<EquipKey, Record<MuscleGroup, ExerciseDef[]>> = {
   gym: {
     push: [
@@ -128,33 +144,39 @@ const EXERCISE_LIBRARY: Record<EquipKey, Record<MuscleGroup, ExerciseDef[]>> = {
   },
 };
 
+// Opções de cardio por tipo de equipamento.
 const CARDIO_LIBRARY: Record<EquipKey, string[]> = {
   gym: ["Esteira (corrida)", "Bicicleta Estacionária", "Elíptico", "Remo"],
   dumbbells: ["Corrida livre", "Pular corda", "Corrida com pesos"],
   bodyweight: ["Burpees", "Polichinelo", "Mountain Climber", "Corrida Estacionária", "Jumping Jacks"],
 };
 
+// Determina o tipo de equipamento com base na lista informada pelo usuário.
 function pickEquipment(equipment: string[]): EquipKey {
   if (equipment.includes("gym")) return "gym";
   if (equipment.includes("dumbbells")) return "dumbbells";
   return "bodyweight";
 }
 
+// Filtra exercícios pela dificuldade máxima permitida.
 function filterByDifficulty(exercises: ExerciseDef[], maxDifficulty: number): ExerciseDef[] {
   return exercises.filter((e) => e.difficulty <= maxDifficulty);
 }
 
+// Rotaciona um array a partir de um offset, pegando "count" elementos.
 function rotate<T>(arr: T[], offset: number, count: number): T[] {
   const result: T[] = [];
   for (let i = 0; i < count; i++) result.push(arr[(offset + i) % arr.length]);
   return result;
 }
 
+// Seleciona exercícios do pool rotacionando para variar a cada dia.
 function pickExercises(pool: ExerciseDef[], offset: number, count: number): ExerciseDef[] {
   const selected = rotate(pool, offset, count);
   return selected;
 }
 
+// Gera um plano de treino personalizado com base nas respostas do onboarding.
 export function generateWorkoutPlan(answers: RecommendationAnswers): WorkoutRecommendationDay[] {
   const { goal, experience, workout_days, equipment } = answers;
   const eqKey = pickEquipment(equipment);
@@ -243,6 +265,7 @@ export function generateWorkoutPlan(answers: RecommendationAnswers): WorkoutReco
   return days;
 }
 
+// Gera um plano alimentar personalizado com base nas respostas e no peso do usuário.
 export function generateDietPlan(answers: RecommendationAnswers, weightKg = 75): DietRecommendationMeal[] {
   const { goal, diet } = answers;
   const isVegan = diet === "vegan";
@@ -341,6 +364,7 @@ export function generateDietPlan(answers: RecommendationAnswers, weightKg = 75):
   return meals;
 }
 
+// Retorna o rótulo em português para um objetivo.
 export function goalLabel(goal: Goal): string {
   return {
     lose_weight: "Perda de Peso",

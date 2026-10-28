@@ -1,3 +1,9 @@
+// =============================================================================
+// Cliente Supabase
+// -----------------------------------------------------------------------------
+// Instância única do cliente Supabase usada em todo o app.
+// =============================================================================
+
 import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
